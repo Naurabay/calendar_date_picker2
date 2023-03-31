@@ -50,16 +50,15 @@ class _MyHomePageState extends State<MyHomePage> {
   List<DateTime?> _singleDatePickerValueWithDefaultValue = [
     DateTime.now(),
   ];
+  List<DateTime?> _fixedRangeDatePickerValueWithDefaultValue = [
+    DateTime.now(),
+  ];
   List<DateTime?> _multiDatePickerValueWithDefaultValue = [
     DateTime(today.year, today.month, 1),
     DateTime(today.year, today.month, 5),
     DateTime(today.year, today.month, 14),
     DateTime(today.year, today.month, 17),
     DateTime(today.year, today.month, 25),
-  ];
-  List<DateTime?> _rangeDatePickerValueWithDefaultValue = [
-    DateTime(1999, 5, 6),
-    DateTime(1999, 5, 21),
   ];
 
   List<DateTime?> _rangeDatePickerWithActionButtonsWithValue = [
@@ -369,8 +368,12 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildDefaultRangeDatePickerWithValue() {
     final config = CalendarDatePicker2Config(
-      calendarType: CalendarDatePicker2Type.range,
-      selectedDayHighlightColor: Colors.teal[800],
+      calendarType: CalendarDatePicker2Type.fixedRange,
+      selectedDayHighlightColor: const Color(0xFFD5A423),
+      dateRangeBack: 1,
+      dateRangeForward: 1,
+      selectedDayBorderRadius: BorderRadius.circular(10.0),
+      dayBorderRadius: BorderRadius.circular(50.0),
       weekdayLabelTextStyle: const TextStyle(
         color: Colors.black87,
         fontWeight: FontWeight.bold,
@@ -388,9 +391,9 @@ class _MyHomePageState extends State<MyHomePage> {
         const Text('Range Date Picker (With default value)'),
         CalendarDatePicker2(
           config: config,
-          value: _rangeDatePickerValueWithDefaultValue,
-          onValueChanged: (dates) =>
-              setState(() => _rangeDatePickerValueWithDefaultValue = dates),
+          value: _fixedRangeDatePickerValueWithDefaultValue,
+          onValueChanged: (dates) => setState(
+              () => _fixedRangeDatePickerValueWithDefaultValue = dates),
         ),
         const SizedBox(height: 10),
         Row(
@@ -401,7 +404,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Text(
               _getValueText(
                 config.calendarType,
-                _rangeDatePickerValueWithDefaultValue,
+                _fixedRangeDatePickerValueWithDefaultValue,
               ),
             ),
           ],

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum CalendarDatePicker2Type { single, multi, range }
+enum CalendarDatePicker2Type { single, multi, range, fixedRange }
 
 typedef CalendarDayTextStylePredicate = TextStyle? Function({
   required DateTime date,
@@ -35,6 +35,8 @@ class CalendarDatePicker2Config {
     DateTime? lastDate,
     DateTime? currentDate,
     DatePickerMode? calendarViewMode,
+    this.dateRangeBack,
+    this.dateRangeForward,
     this.weekdayLabels,
     this.weekdayLabelTextStyle,
     this.firstDayOfWeek,
@@ -49,6 +51,7 @@ class CalendarDatePicker2Config {
     this.todayTextStyle,
     this.yearTextStyle,
     this.selectedYearTextStyle,
+    this.selectedDayBorderRadius,
     this.dayBorderRadius,
     this.yearBorderRadius,
     this.selectableDayPredicate,
@@ -80,6 +83,12 @@ class CalendarDatePicker2Config {
 
   /// The initially displayed view of the calendar picker.
   final DatePickerMode calendarViewMode;
+
+  /// The data range back from selected day.
+  final int? dateRangeBack;
+
+  /// The data range forward from selected day.
+  final int? dateRangeForward;
 
   /// Custom weekday labels for the current locale, MUST starts from Sunday
   /// Examples:
@@ -131,6 +140,9 @@ class CalendarDatePicker2Config {
   /// Custom border radius for day indicator
   final BorderRadius? dayBorderRadius;
 
+  /// Custom border radius for selected day indicator
+  final BorderRadius? selectedDayBorderRadius;
+
   /// Custom border radius for year indicator
   final BorderRadius? yearBorderRadius;
 
@@ -163,6 +175,8 @@ class CalendarDatePicker2Config {
     DateTime? firstDate,
     DateTime? lastDate,
     DateTime? currentDate,
+    int? dateRangeBack,
+    int? dateRangeForward,
     DatePickerMode? calendarViewMode,
     List<String>? weekdayLabels,
     TextStyle? weekdayLabelTextStyle,
@@ -179,6 +193,7 @@ class CalendarDatePicker2Config {
     TextStyle? yearTextStyle,
     TextStyle? selectedYearTextStyle,
     BorderRadius? dayBorderRadius,
+    BorderRadius? selectedDayBorderRadius,
     BorderRadius? yearBorderRadius,
     SelectableDayPredicate? selectableDayPredicate,
     CalendarDayTextStylePredicate? dayTextStylePredicate,
@@ -194,6 +209,8 @@ class CalendarDatePicker2Config {
       firstDate: DateUtils.dateOnly(firstDate ?? this.firstDate),
       lastDate: DateUtils.dateOnly(lastDate ?? this.lastDate),
       currentDate: currentDate ?? this.currentDate,
+      dateRangeBack: dateRangeBack ?? this.dateRangeBack,
+      dateRangeForward: dateRangeForward ?? this.dateRangeForward,
       calendarViewMode: calendarViewMode ?? this.calendarViewMode,
       weekdayLabels: weekdayLabels ?? this.weekdayLabels,
       weekdayLabelTextStyle:
@@ -213,6 +230,8 @@ class CalendarDatePicker2Config {
       selectedYearTextStyle:
           selectedYearTextStyle ?? this.selectedYearTextStyle,
       dayBorderRadius: dayBorderRadius ?? this.dayBorderRadius,
+      selectedDayBorderRadius:
+          selectedDayBorderRadius ?? this.selectedDayBorderRadius,
       yearBorderRadius: yearBorderRadius ?? this.yearBorderRadius,
       selectableDayPredicate:
           selectableDayPredicate ?? this.selectableDayPredicate,
@@ -237,6 +256,8 @@ class CalendarDatePicker2WithActionButtonsConfig
     DateTime? firstDate,
     DateTime? lastDate,
     DateTime? currentDate,
+    int? dateRangeBack,
+    int? dateRangeForward,
     DatePickerMode? calendarViewMode,
     List<String>? weekdayLabels,
     TextStyle? weekdayLabelTextStyle,
@@ -253,6 +274,7 @@ class CalendarDatePicker2WithActionButtonsConfig
     TextStyle? yearTextStyle,
     TextStyle? selectedYearTextStyle,
     BorderRadius? dayBorderRadius,
+    BorderRadius? selectedDayBorderRadius,
     BorderRadius? yearBorderRadius,
     SelectableDayPredicate? selectableDayPredicate,
     CalendarDayTextStylePredicate? dayTextStylePredicate,
@@ -276,6 +298,8 @@ class CalendarDatePicker2WithActionButtonsConfig
           firstDate: firstDate,
           lastDate: lastDate,
           currentDate: currentDate,
+          dateRangeForward: dateRangeForward,
+          dateRangeBack: dateRangeBack,
           calendarViewMode: calendarViewMode,
           weekdayLabels: weekdayLabels,
           weekdayLabelTextStyle: weekdayLabelTextStyle,
@@ -292,6 +316,7 @@ class CalendarDatePicker2WithActionButtonsConfig
           yearTextStyle: yearTextStyle,
           selectedYearTextStyle: selectedYearTextStyle,
           dayBorderRadius: dayBorderRadius,
+          selectedDayBorderRadius: selectedDayBorderRadius,
           yearBorderRadius: yearBorderRadius,
           selectableDayPredicate: selectableDayPredicate,
           dayTextStylePredicate: dayTextStylePredicate,
@@ -335,6 +360,8 @@ class CalendarDatePicker2WithActionButtonsConfig
     CalendarDatePicker2Type? calendarType,
     DateTime? firstDate,
     DateTime? lastDate,
+    int? dateRangeBack,
+    int? dateRangeForward,
     DateTime? currentDate,
     DatePickerMode? calendarViewMode,
     List<String>? weekdayLabels,
@@ -352,6 +379,7 @@ class CalendarDatePicker2WithActionButtonsConfig
     TextStyle? yearTextStyle,
     TextStyle? selectedYearTextStyle,
     BorderRadius? dayBorderRadius,
+    BorderRadius? selectedDayBorderRadius,
     BorderRadius? yearBorderRadius,
     SelectableDayPredicate? selectableDayPredicate,
     CalendarDayTextStylePredicate? dayTextStylePredicate,
@@ -376,6 +404,8 @@ class CalendarDatePicker2WithActionButtonsConfig
       firstDate: DateUtils.dateOnly(firstDate ?? this.firstDate),
       lastDate: DateUtils.dateOnly(lastDate ?? this.lastDate),
       currentDate: currentDate ?? this.currentDate,
+      dateRangeBack: dateRangeBack ?? this.dateRangeBack,
+      dateRangeForward: dateRangeForward ?? this.dateRangeForward,
       calendarViewMode: calendarViewMode ?? this.calendarViewMode,
       weekdayLabels: weekdayLabels ?? this.weekdayLabels,
       weekdayLabelTextStyle:
@@ -395,6 +425,8 @@ class CalendarDatePicker2WithActionButtonsConfig
       selectedYearTextStyle:
           selectedYearTextStyle ?? this.selectedYearTextStyle,
       dayBorderRadius: dayBorderRadius ?? this.dayBorderRadius,
+      selectedDayBorderRadius:
+          selectedDayBorderRadius ?? this.selectedDayBorderRadius,
       yearBorderRadius: yearBorderRadius ?? this.yearBorderRadius,
       selectableDayPredicate:
           selectableDayPredicate ?? this.selectableDayPredicate,

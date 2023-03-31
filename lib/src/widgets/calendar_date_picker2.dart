@@ -44,6 +44,10 @@ class CalendarDatePicker2 extends StatefulWidget {
       assert(value.length < 2,
           'Error: single date picker only allows maximum one initial date');
     }
+    if (config.calendarType == CalendarDatePicker2Type.fixedRange) {
+      assert(value.length < 2,
+          'Error: fixedRange date picker only allows maximum one initial date');
+    }
 
     if (config.calendarType == CalendarDatePicker2Type.range &&
         value.length > 1) {
@@ -219,6 +223,9 @@ class _CalendarDatePicker2State extends State<CalendarDatePicker2> {
 
       if (widget.config.calendarType == CalendarDatePicker2Type.single) {
         selectedDates = [value];
+      } else if (widget.config.calendarType ==
+          CalendarDatePicker2Type.fixedRange) {
+        selectedDates = [value];
       } else if (widget.config.calendarType == CalendarDatePicker2Type.multi) {
         final index =
             selectedDates.indexWhere((d) => DateUtils.isSameDay(d, value));
@@ -248,10 +255,11 @@ class _CalendarDatePicker2State extends State<CalendarDatePicker2> {
         ..removeWhere((d) => d == null)
         ..sort((d1, d2) => d1!.compareTo(d2!));
 
-      final isValueDifferent =
-          widget.config.calendarType != CalendarDatePicker2Type.single ||
-              !DateUtils.isSameDay(selectedDates[0],
-                  _selectedDates.isNotEmpty ? _selectedDates[0] : null);
+      final isValueDifferent = widget.config.calendarType !=
+              CalendarDatePicker2Type.single ||
+          widget.config.calendarType != CalendarDatePicker2Type.fixedRange ||
+          !DateUtils.isSameDay(selectedDates[0],
+              _selectedDates.isNotEmpty ? _selectedDates[0] : null);
       if (isValueDifferent) {
         _selectedDates = _selectedDates
           ..clear()
@@ -977,14 +985,25 @@ class _DayPickerState extends State<_DayPicker> {
       color: colorScheme.onSurface.withOpacity(0.60),
     );
     final TextStyle dayStyle = textTheme.bodySmall!;
-    final Color enabledDayColor = colorScheme.onSurface.withOpacity(0.87);
-    final Color disabledDayColor = colorScheme.onSurface.withOpacity(0.38);
+
     final Color selectedDayColor = colorScheme.onPrimary;
     final Color selectedDayBackground = colorScheme.primary;
     final Color todayColor = colorScheme.primary;
+    final Color rangeColor = HSLColor.fromColor(
+            widget.config.selectedDayHighlightColor ?? selectedDayBackground)
+        .withLightness(0.90)
+        .toColor();
+    final Color enabledDayColor = colorScheme.onSurface.withOpacity(0.87);
+    final Color disabledDayColor = colorScheme.onSurface.withOpacity(0.38);
 
     final int year = widget.displayedMonth.year;
     final int month = widget.displayedMonth.month;
+    final List fixedRange = [
+      widget.selectedDates[0]
+          .subtract(Duration(days: widget.config.dateRangeBack ?? 1)),
+      widget.selectedDates[0]
+          .add(Duration(days: widget.config.dateRangeBack ?? 1))
+    ];
 
     final int daysInMonth = DateUtils.getDaysInMonth(year, month);
     final int dayOffset = getMonthFirstDayOffset(year, month,
@@ -1005,13 +1024,34 @@ class _DayPickerState extends State<_DayPicker> {
             !(widget.config.selectableDayPredicate?.call(dayToBuild) ?? true);
         final bool isSelectedDay =
             widget.selectedDates.any((d) => DateUtils.isSameDay(d, dayToBuild));
+        final bool isFixedRange =
+            fixedRange.any((d) => DateUtils.isSameDay(d, dayToBuild));
 
         final bool isToday =
             DateUtils.isSameDay(widget.config.currentDate, dayToBuild);
 
         BoxDecoration? decoration;
         Color dayColor = enabledDayColor;
-        if (isSelectedDay) {
+        if (widget.config.calendarType == CalendarDatePicker2Type.fixedRange) {
+          if (isFixedRange) {
+            decoration = BoxDecoration(
+              borderRadius: widget.config.dayBorderRadius,
+              color: rangeColor,
+            );
+          } else if (isDisabled) {
+            dayColor = disabledDayColor;
+          } else if (isSelectedDay) {
+            // The selected day gets a circle background highlight, and a
+            // contrasting text color.
+            dayColor = selectedDayColor;
+
+            decoration = BoxDecoration(
+              borderRadius: widget.config.selectedDayBorderRadius,
+              color: widget.config.selectedDayHighlightColor ??
+                  selectedDayBackground,
+            );
+          }
+        } else if (isSelectedDay) {
           // The selected day gets a circle background highlight, and a
           // contrasting text color.
           dayColor = selectedDayColor;
@@ -1092,6 +1132,60 @@ class _DayPickerState extends State<_DayPicker> {
                 color: (widget.config.selectedDayHighlightColor ??
                         selectedDayBackground)
                     .withOpacity(0.15),
+              );
+
+              if (DateUtils.isSameDay(startDate, dayToBuild)) {
+                dayWidget = Stack(
+                  children: [
+                    Row(children: [
+                      const Spacer(),
+                      Expanded(
+                        child: Container(
+                            decoration: rangePickerIncludedDayDecoration),
+                      ),
+                    ]),
+                    dayWidget,
+                  ],
+                );
+              } else if (DateUtils.isSameDay(endDate, dayToBuild)) {
+                dayWidget = Stack(
+                  children: [
+                    Row(children: [
+                      Expanded(
+                        child: Container(
+                            decoration: rangePickerIncludedDayDecoration),
+                      ),
+                      const Spacer(),
+                    ]),
+                    dayWidget,
+                  ],
+                );
+              } else {
+                dayWidget = Stack(
+                  children: [
+                    Container(decoration: rangePickerIncludedDayDecoration),
+                    dayWidget,
+                  ],
+                );
+              }
+            }
+          }
+        }
+
+        if (widget.config.calendarType == CalendarDatePicker2Type.fixedRange) {
+          if (widget.selectedDates.length == 1) {
+            final startDate = DateUtils.dateOnly(widget.selectedDates[0]
+                .subtract(Duration(days: widget.config.dateRangeBack ?? 1)));
+            final endDate = DateUtils.dateOnly(widget.selectedDates[0]
+                .add(Duration(days: widget.config.dateRangeBack ?? 1)));
+            final isDateInRange = !(dayToBuild.isBefore(startDate) ||
+                dayToBuild.isAfter(endDate));
+            final isStartDateSameToEndDate =
+                DateUtils.isSameDay(startDate, endDate);
+
+            if (isDateInRange && !isStartDateSameToEndDate) {
+              final rangePickerIncludedDayDecoration = BoxDecoration(
+                color: rangeColor,
               );
 
               if (DateUtils.isSameDay(startDate, dayToBuild)) {
