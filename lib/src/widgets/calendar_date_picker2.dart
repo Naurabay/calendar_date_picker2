@@ -997,10 +997,7 @@ class _DayPickerState extends State<_DayPicker> {
     final Color selectedDayColor = colorScheme.onPrimary;
     final Color selectedDayBackground = colorScheme.primary;
     final Color todayColor = colorScheme.primary;
-    final Color rangeColor = HSLColor.fromColor(
-            widget.config.selectedDayHighlightColor ?? selectedDayBackground)
-        .withLightness(0.90)
-        .toColor();
+    final Color? rangeColor = widget.config.datePickerRangeColor;
     final Color enabledDayColor = colorScheme.onSurface.withOpacity(0.87);
     final Color disabledDayColor = colorScheme.onSurface.withOpacity(0.38);
 

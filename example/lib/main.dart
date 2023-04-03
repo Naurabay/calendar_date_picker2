@@ -374,6 +374,9 @@ class _MyHomePageState extends State<MyHomePage> {
       dateRangeForward: 1,
       selectedDayBorderRadius: BorderRadius.circular(10.0),
       dayBorderRadius: BorderRadius.circular(50.0),
+      datePickerRangeColor: HSLColor.fromColor(const Color(0xFFD5A423))
+          .withLightness(0.5)
+          .toColor(),
       weekdayLabelTextStyle: const TextStyle(
         color: Colors.black87,
         fontWeight: FontWeight.bold,
